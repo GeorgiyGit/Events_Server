@@ -14,7 +14,7 @@ using System.Text;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
-var connectionString = builder.Configuration.GetConnectionString("EventsDbContextConnection") ?? throw new InvalidOperationException("Connection string 'EventsDbContextConnection' not found.");
+var connectionString = builder.Configuration.GetConnectionString("AzureDbConnection") ?? throw new InvalidOperationException("Connection string 'AzureDbConnection' not found.");
 ConfigurationManager configuration = builder.Configuration;
 
 //builder.Services.AddIdentityCore<User>(options => options.SignIn.RequireConfirmedAccount = true)

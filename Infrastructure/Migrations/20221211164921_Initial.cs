@@ -58,18 +58,11 @@ namespace Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ParentId = table.Column<int>(type: "int", nullable: true)
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Genres", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Genres_Genres_ParentId",
-                        column: x => x.ParentId,
-                        principalTable: "Genres",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -192,7 +185,8 @@ namespace Infrastructure.Migrations
                     Facebook = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Instagram = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     GoogleMaps = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    OwnerId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    OwnerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    IsModerated = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -203,6 +197,29 @@ namespace Infrastructure.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "GenreGenre",
+                columns: table => new
+                {
+                    ParentsId = table.Column<int>(type: "int", nullable: false),
+                    SubTypesId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GenreGenre", x => new { x.ParentsId, x.SubTypesId });
+                    table.ForeignKey(
+                        name: "FK_GenreGenre_Genres_ParentsId",
+                        column: x => x.ParentsId,
+                        principalTable: "Genres",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_GenreGenre_Genres_SubTypesId",
+                        column: x => x.SubTypesId,
+                        principalTable: "Genres",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -280,13 +297,13 @@ namespace Infrastructure.Migrations
                         column: x => x.LikedUsersId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_PlaceUser_Places_LikedPlacesId",
                         column: x => x.LikedPlacesId,
                         principalTable: "Places",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -304,13 +321,13 @@ namespace Infrastructure.Migrations
                         column: x => x.FavoriteUsersId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_PlaceUser1_Places_FavoritePlacesId",
                         column: x => x.FavoritePlacesId,
                         principalTable: "Places",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -395,13 +412,13 @@ namespace Infrastructure.Migrations
                         column: x => x.LikedUsersId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_EventUser_Events_LikedEventsId",
                         column: x => x.LikedEventsId,
                         principalTable: "Events",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -419,13 +436,13 @@ namespace Infrastructure.Migrations
                         column: x => x.FavoriteUsersId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_EventUser1_Events_FavoriteEventsId",
                         column: x => x.FavoriteEventsId,
                         principalTable: "Events",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -477,13 +494,13 @@ namespace Infrastructure.Migrations
                         column: x => x.LikedUsersId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_CommentUser_Comments_LikedCommentsId",
                         column: x => x.LikedCommentsId,
                         principalTable: "Comments",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -501,13 +518,13 @@ namespace Infrastructure.Migrations
                         column: x => x.DislikedUsersId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_CommentUser1_Comments_DislikedCommentsId",
                         column: x => x.DislikedCommentsId,
                         principalTable: "Comments",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateIndex(
@@ -605,14 +622,14 @@ namespace Infrastructure.Migrations
                 column: "FavoriteUsersId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_GenreGenre_SubTypesId",
+                table: "GenreGenre",
+                column: "SubTypesId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_GenrePlace_TypesId",
                 table: "GenrePlace",
                 column: "TypesId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Genres_ParentId",
-                table: "Genres",
-                column: "ParentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Images_EventId",
@@ -679,6 +696,9 @@ namespace Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "EventUser1");
+
+            migrationBuilder.DropTable(
+                name: "GenreGenre");
 
             migrationBuilder.DropTable(
                 name: "GenrePlace");

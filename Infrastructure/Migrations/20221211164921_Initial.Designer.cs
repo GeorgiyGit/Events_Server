@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(EventsDbContext))]
-    [Migration("20221202085920_addMultipleGenreParents")]
-    partial class addMultipleGenreParents
+    [Migration("20221211164921_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -236,6 +236,9 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("Instagram")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsModerated")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
