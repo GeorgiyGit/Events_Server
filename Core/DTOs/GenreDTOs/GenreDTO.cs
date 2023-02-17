@@ -13,8 +13,6 @@ namespace Core.DTOs.GenreDTOs
         public int Id { get; set; }
 
         public string Name { get; set; } = "";
-        public ICollection<int> Events { get; set; } = new HashSet<int>();
-        public ICollection<int> Places { get; set; } = new HashSet<int>();
 
 		public ICollection<int> Parents { get; set; } = new HashSet<int>();
 	}

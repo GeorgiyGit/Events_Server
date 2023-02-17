@@ -59,7 +59,8 @@ namespace Core.Services
 
 				return new TokenDTO()
 				{
-					Token = await GenerateTokenAsync(user)
+					Token = await GenerateTokenAsync(user),
+					Roles = userRoles
 				};
 			}
 			throw new HttpException(ErrorMessages.Unauthorized, HttpStatusCode.NotFound);
@@ -83,6 +84,15 @@ namespace Core.Services
 			var result = await userManager.CreateAsync(user, model.Password);
 			if (!result.Succeeded)
 				throw new HttpException(ErrorMessages.UserCreationFailed, HttpStatusCode.InternalServerError);
+
+			if (!await _roleManager.RoleExistsAsync(UserRoles.User))
+				await _roleManager.CreateAsync(new IdentityRole(UserRoles.User));
+
+			if (await _roleManager.RoleExistsAsync(UserRoles.User))
+			{
+				await userManager.AddToRoleAsync(user, UserRoles.User);
+			}
+
 		}
 
 		public async Task RegisterAdmin(UserCreateDTO model)

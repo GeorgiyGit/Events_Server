@@ -9,7 +9,11 @@ namespace Core.Helpers
         {
             CreateMap<Comment, CommentDTO>()
                 .ForMember(dest => dest.OwnerUserName,
-                           opt => opt.MapFrom(src => src.Owner.UserName));
+                           opt => opt.MapFrom(src => src.Owner.UserName))
+                .ForMember(dest =>dest.isLiked,
+                           opt=>opt.Ignore())
+				.ForMember(dest => dest.isDisLiked,
+						   opt => opt.Ignore());
             CreateMap<CommentDTO, Comment>();
 
             CreateMap<CommentCreateDTO, Comment>();

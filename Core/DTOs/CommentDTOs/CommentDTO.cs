@@ -21,6 +21,9 @@ namespace Core.DTOs.CommentDTOs
         public int Likes { get; set; }
         public int Dislikes { get; set; }
 
+        public bool isLiked { get; set; }
+        public bool isDisLiked { get; set; }
+
         //public ICollection<UserBase> LikedUsers { get; set; } = new HashSet<UserBase>();
         //public ICollection<UserBase> DislikedUsers { get; set; } = new HashSet<UserBase>();
     }

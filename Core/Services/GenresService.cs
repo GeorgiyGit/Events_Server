@@ -25,8 +25,7 @@ namespace Core.Services
             foreach(var id in ge.Parents)
             {
                 var p = (await repository.GetAsync(g => g.Id == id, includeProperties: $"{nameof(Genre.SubTypes)}")).First();
-                var exist = p.SubTypes.ToList().Find(x => x.Id == id);
-                if(exist != null)
+                if(p != null)
                 {
                     p.SubTypes.Add(g);
                     g.Parents.Add(p);
@@ -41,7 +40,7 @@ namespace Core.Services
         {
             if (id < 0) throw new HttpException(ErrorMessages.EventBadRequest, HttpStatusCode.BadRequest);
 
-            var ge = (await repository.GetAsync(x => x.Id == id, includeProperties: $"{nameof(Genre.SubTypes)}")).First();
+            var ge = (await repository.GetAsync(x => x.Id == id, includeProperties: $"{nameof(Genre.SubTypes)},{nameof(Genre.Parents)},{nameof(Genre.Events)},{nameof(Genre.Places)}")).First();
 
             if (ge == null) throw new HttpException(ErrorMessages.EventNotFound, HttpStatusCode.NotFound);
 
@@ -69,9 +68,16 @@ namespace Core.Services
 
         public async Task<IEnumerable<GenreDTO>> GetAllAsync()
         {
-            var types = await repository.GetAllAsync();
+            var types = (await repository.GetAsync(includeProperties:$"{nameof(Genre.Parents)}")).ToList();
+            var typesMap = mapper.Map<IEnumerable<GenreDTO>>(types).ToList();
 
-			return mapper.Map<IEnumerable<GenreDTO>>(types);
+            for(int i = 0; i < types.Count; i++)
+            {
+                typesMap[i].Parents = types[i].Parents.Select(p => p.Id).ToList();
+            }
+
+
+            return typesMap;
         }
 
         public async Task<GenreDTO?> GetOneAsync(int id)
@@ -79,13 +85,17 @@ namespace Core.Services
             var g = await GetOriginalAsync(id);
             if (g == null) return null;
 
-			return mapper.Map<GenreDTO>(g);
+            var gMap= mapper.Map<GenreDTO>(g);
+
+            gMap.Parents = g.Parents.Select(p => p.Id).ToList();
+
+            return gMap;
 		}
         public async Task<Genre?> GetOriginalAsync(int id)
         {
 			if (id < 0) throw new HttpException(ErrorMessages.GenreBadRequest, HttpStatusCode.BadRequest);
 
-            var ev = await repository.GetAsync(x => x.Id == id, includeProperties: $"{nameof(Genre.Places)},{nameof(Genre.Events)}");
+            var ev = await repository.GetAsync(x => x.Id == id, includeProperties:$"{nameof(Genre.Parents)}");
 
 
             //if (ev == null) throw new HttpException(ErrorMessages.GenreNotFound, HttpStatusCode.NotFound);

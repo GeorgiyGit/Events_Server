@@ -62,5 +62,35 @@ namespace Server.Controllers
 
             return Ok();
         }
-    }
+
+
+        [HttpPost("addLike/{id}")]
+		[AllowAnonymous]
+		public async Task<IActionResult> AddLike([FromRoute] int id)
+		{
+            await commentsService.AddLike(id);
+			return Ok();
+		}
+
+		[HttpPost("addDisLike/{id}")]
+		public async Task<IActionResult> AddDisLike([FromRoute] int id)
+		{
+			await commentsService.AddDisLike(id);
+			return Ok();
+		}
+
+		[HttpDelete("removeLike/{id}")]
+		public async Task<IActionResult> RemoveLike([FromRoute] int id)
+		{
+			await commentsService.DeleteLike(id);
+			return Ok();
+		}
+
+		[HttpDelete("removeDisLike/{id}")]
+		public async Task<IActionResult> RemoveDisLike([FromRoute] int id)
+		{
+			await commentsService.DeleteDisLike(id);
+			return Ok();
+		}
+	}
 }

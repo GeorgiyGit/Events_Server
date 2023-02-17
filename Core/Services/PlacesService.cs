@@ -73,8 +73,7 @@ namespace Core.Services
             string userId = getUserIdService.GetUserId();
 
             p.OwnerId = userId;
-
-            foreach(var id in pl?.Types)
+            foreach (var id in pl.Types)
             {
                 var genre = await genresService.GetOriginalAsync(id);
                 if (genre != null)
@@ -82,7 +81,7 @@ namespace Core.Services
                     p.Types.Add(genre);
                     genre.Places.Add(p);
                 }
-			}
+            }
             //var img = new Image()
             //{
                 //Path = pl.Image,
@@ -101,16 +100,6 @@ namespace Core.Services
 			string userId = getUserIdService.GetUserId();
 
 			p.OwnerId = userId;
-
-            foreach (var id in pl?.Types)
-            {
-                var genre = await genresService.GetOriginalAsync(id);
-                if (genre != null)
-                {
-                    p.Types.Add(genre);
-                    genre.Places.Add(p);
-                }
-            }
             var oldP = (await repository.GetAsync(x => x.Id == pl.Id, includeProperties: $"{nameof(Place.Images)},{nameof(Place.Events)},{nameof(Place.Types)}")).FirstOrDefault();
 			repository.Remove(oldP);
 			await repository.AddAsync(p);
@@ -136,7 +125,7 @@ namespace Core.Services
         {
 			if (id < 0) throw new HttpException(ErrorMessages.PlaceBadRequest, HttpStatusCode.BadRequest);
 
-			var pl = (await repository.GetAsync(x => x.Id == id, includeProperties: $"{nameof(Place.Events)},{nameof(Place.Comments)}")).FirstOrDefault();
+			var pl = (await repository.GetAsync(x => x.Id == id, includeProperties: $"{nameof(Place.Events)},{nameof(Place.Comments)},{nameof(Place.Types)}")).FirstOrDefault();
 
 			if (pl == null) throw new HttpException(ErrorMessages.PlaceNotFound, HttpStatusCode.NotFound);
 

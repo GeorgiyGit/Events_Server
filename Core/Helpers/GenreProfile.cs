@@ -8,10 +8,6 @@ namespace Core.Helpers
         public GenreProfile()
         {
             CreateMap<Genre, GenreDTO>().ForMember(dest => dest.Parents,
-												   opt => opt.Ignore())
-				                        .ForMember(dest => dest.Events,
-												   opt => opt.Ignore())
-										.ForMember(dest => dest.Places,
 												   opt => opt.Ignore());
 			CreateMap<GenreDTO, Genre>();
 

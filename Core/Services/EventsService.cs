@@ -67,8 +67,7 @@ namespace Core.Services
 			string userId = getUserIdService.GetUserId();
 
 			_event.OwnerId = userId;
-
-			foreach (var id in ev?.Types)
+			foreach (var id in ev.Types)
 			{
 				var genre = await genresService.GetOriginalAsync(id);
 				if (genre != null)
@@ -77,7 +76,6 @@ namespace Core.Services
 					genre.Events.Add(_event);
 				}
 			}
-
 
 			await repository.AddAsync(_event);
 			await repository.SaveChangesAsync();
@@ -89,8 +87,7 @@ namespace Core.Services
 			string userId = getUserIdService.GetUserId();
 
 			_event.OwnerId = userId;
-
-			foreach (var id in ev?.Types)
+			foreach (var id in ev.Types)
 			{
 				var genre = await genresService.GetOriginalAsync(id);
 				if (genre != null)
@@ -99,7 +96,6 @@ namespace Core.Services
 					genre.Events.Add(_event);
 				}
 			}
-
 
 			var oldE = (await repository.GetAsync(x => x.Id == ev.Id, includeProperties: $"{nameof(Event.Images)},{nameof(Event.Types)}")).FirstOrDefault();
 			repository.Remove(oldE);

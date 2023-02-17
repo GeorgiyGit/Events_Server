@@ -17,6 +17,6 @@ namespace Core.Services
 		{
 			this.httpContextAccessor = httpContextAccessor;
 		}
-		public string GetUserId() => httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+		public string? GetUserId() => httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 	}
 }

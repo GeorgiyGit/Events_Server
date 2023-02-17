@@ -14,7 +14,7 @@ using System.Text;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
-var connectionString = builder.Configuration.GetConnectionString("AzureDbConnection") ?? throw new InvalidOperationException("Connection string 'AzureDbConnection' not found.");
+var connectionString = builder.Configuration.GetConnectionString("EventsDbContextConnection") ?? throw new InvalidOperationException("Connection string 'AzureDbConnection' not found.");
 ConfigurationManager configuration = builder.Configuration;
 
 //builder.Services.AddIdentityCore<User>(options => options.SignIn.RequireConfirmedAccount = true)
@@ -64,6 +64,7 @@ builder.Services.AddScoped<ICommentsService, CommentsService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IGetUserIdService, GetUserIdService>();
 builder.Services.AddScoped<IFavoriteService, FavoriteService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

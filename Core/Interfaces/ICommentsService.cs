@@ -15,5 +15,11 @@ namespace Core.Interfaces
         Task CreateAsync(CommentCreateDTO ev);
         Task EditAsync(CommentEditDTO ev);
         Task DeleteAsync(int id);
+
+        Task AddLike(int id);
+        Task DeleteLike(int id);
+
+        Task AddDisLike(int id);
+        Task DeleteDisLike(int id);
     }
 }

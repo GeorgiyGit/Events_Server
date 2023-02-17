@@ -12,12 +12,12 @@ namespace Core.Models
 	[DataContract(IsReference = true)]
 	public class User : IdentityUser
     {
-        //public int Id { get; set; }
-        //public string Name { get; set; } = "";
-        //public string Email { get; set; } = "";
-        //public string Password { get; set; } = "";
+		//public int Id { get; set; }
+		//public string Name { get; set; } = "";
+		//public string Email { get; set; } = "";
+		//public string Password { get; set; } = "";
 
-        [Required]
+		[Required]
         public DateTime CreationTime { get; set; }
 
         public ICollection<Comment> CreatedComments { get; set; } = new HashSet<Comment>();

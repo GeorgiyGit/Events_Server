@@ -2,12 +2,14 @@
 using Core.DTOs.GenreDTOs;
 using Core.Interfaces;
 using Core.Resources;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Server.Controllers
 {
-    [Route("api/[controller]")]
+	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+	[Route("api/[controller]")]
     [ApiController]
     public class GenresController : ControllerBase
     {
@@ -19,6 +21,7 @@ namespace Server.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
 		public async Task<IActionResult> GetAsync()
         {
             return Ok(await genresService.GetAllAsync());
@@ -49,7 +52,7 @@ namespace Server.Controllers
             return Ok();
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
 		[Authorize(Roles = UserRoles.Admin)]
 		public async Task<IActionResult> Delete([FromRoute] int id)
         {
