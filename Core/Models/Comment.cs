@@ -35,6 +35,7 @@ namespace Core.Models
 
         [Required]
         public int Dislikes { get; set; }
+
         public ICollection<User> LikedUsers { get; set; } = new HashSet<User>();
         public ICollection<User> DislikedUsers { get; set; } = new HashSet<User>();
 

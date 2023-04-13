@@ -10,10 +10,6 @@ namespace Core.Helpers
 			CreateMap<Event, EventDTO>()
 				.ForMember(dest => dest.OwnerUserName,
 						   opt => opt.MapFrom(src => src.Owner.UserName))
-				.ForMember(dest => dest.LikedUsers,
-						   opt => opt.Ignore())
-				.ForMember(dest => dest.FavoriteUsers,
-						   opt => opt.Ignore())
 				.ForMember(dest => dest.PlaceId,
 						   opt => opt.MapFrom(src => src.Place.Id));
 
@@ -24,6 +20,8 @@ namespace Core.Helpers
 				                              .ForMember(dest => dest.LikedUsers,
 														 opt => opt.Ignore())
 											  .ForMember(dest => dest.FavoriteUsers,
+														 opt => opt.Ignore())
+											  .ForMember(dest => dest.Images,
 														 opt => opt.Ignore());
 
             CreateMap<EventEditDTO, Event>().ForMember(dest => dest.Types,
@@ -31,6 +29,13 @@ namespace Core.Helpers
 
 			CreateMap<Event, EventSimpleDTO>().ForMember(dest => dest.Route,
 														 opt => opt.MapFrom(src => src.Place.Route));
+
+
+			CreateMap<Event, EventFavoriteDTO>()
+				.ForMember(dest => dest.Route,
+						   opt => opt.MapFrom(src => src.Place.Route))
+				.ForMember(dest => dest.Image,
+						   opt => opt.Ignore());
 		}
     }
 }

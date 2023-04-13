@@ -12,8 +12,9 @@ namespace Core.Helpers
                            opt => opt.MapFrom(src => src.Owner.UserName))
                 .ForMember(dest =>dest.isLiked,
                            opt=>opt.Ignore())
-				.ForMember(dest => dest.isDisLiked,
+				.ForMember(dest => dest.isDisliked,
 						   opt => opt.Ignore());
+
             CreateMap<CommentDTO, Comment>();
 
             CreateMap<CommentCreateDTO, Comment>();

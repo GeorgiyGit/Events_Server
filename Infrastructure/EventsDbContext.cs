@@ -41,6 +41,13 @@ namespace Infrastructure
             OnTypeCreating(modelBuilder);
             OnPlaceCreating(modelBuilder);
         }
+
+
+        private void OnCountryCreating(ModelBuilder modelBuilder)
+        {
+			modelBuilder.Entity<Country>().HasMany(c=>c.Regions)
+                                          .WithOne(r=>r.country)
+		}
         private void OnUserCreating(ModelBuilder modelBuilder)
         {
 

@@ -39,7 +39,7 @@ namespace Events_WebAPI.Controllers
 
 
         [HttpPost]
-		public async Task<IActionResult> Create([FromBody] EventCreateDTO ev)
+		public async Task<IActionResult> Create([FromForm] EventCreateDTO ev)
         {
             await eventsService.CreateAsync(ev);
 

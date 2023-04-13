@@ -38,8 +38,22 @@ namespace Server.Controllers
             return Ok(await commentsService.GetOneAsync(id));
         }
 
+		[HttpGet("childs/{id}")]
+		[AllowAnonymous]
+		public async Task<IActionResult> GetChilds([FromRoute] int id)
+		{
+			return Ok(await commentsService.GetAllChilds(id));
+		}
 
-        [HttpPost]
+		[HttpGet("childs-count/{id}")]
+		[AllowAnonymous]
+		public async Task<IActionResult> GetChildsCount([FromRoute] int id)
+		{
+			return Ok(await commentsService.GetChildsCount(id));
+		}
+
+
+		[HttpPost]
 		public async Task<IActionResult> CreateAsync([FromBody] CommentCreateDTO comment)
         {
             await commentsService.CreateAsync(comment);
@@ -65,7 +79,6 @@ namespace Server.Controllers
 
 
         [HttpPost("addLike/{id}")]
-		[AllowAnonymous]
 		public async Task<IActionResult> AddLike([FromRoute] int id)
 		{
             await commentsService.AddLike(id);

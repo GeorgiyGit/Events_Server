@@ -12,13 +12,12 @@ namespace Core.Interfaces
 	{
 		public Task AddFavoritePlace(int id);
 		public Task RemoveFavoritePlace(int id);
-		public Task<IEnumerable<PlaceDTO>> GetFavoritePlaces();
+		public Task<IEnumerable<PlaceFavoriteDTO>> GetFavoritePlaces();
 		public Task<bool> IsFavoritePlace(int id);
 
 		public Task AddFavoriteEvent(int id);
 		public Task RemoveFavoriteEvent(int id);
-		public Task<IEnumerable<EventDTO>> GetFavoriteEvents();
+		public Task<IEnumerable<EventFavoriteDTO>> GetFavoriteEvents();
 		public Task<bool> IsFavoriteEvent(int id);
-
 	}
 }

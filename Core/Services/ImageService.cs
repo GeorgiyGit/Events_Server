@@ -18,39 +18,34 @@ namespace Core.Services
 	{
 		private IWebHostEnvironment environment;
 		private readonly IRepository<Image> repository;
-		private readonly IRepository<Place> placeRepository;
-		private readonly IRepository<Event> eventRepository;
 		private readonly IMapper mapper;
+		private readonly string filesDirectory;
 		public ImageService(IWebHostEnvironment env,
 							IMapper mapper,
 							IRepository<Image> repository,
-							IRepository<Place> placeRepository,
-							IRepository<Event> eventRepository)
+							IConfiguration configuration)
 		{
 			this.environment = env;
 			this.repository = repository;
-			this.placeRepository = placeRepository;
-			this.eventRepository = eventRepository;
 			this.mapper = mapper;
+			this.filesDirectory = "Uploads";//configuration.GetSection("FilesConf").GetValue("Path");
 		}
 
-		public bool DeleteImageAsync(string imageFileName)
+		private async Task<bool> DeleteImageFile(string imagePath)
 		{
-			var wwwPath = this.environment.WebRootPath;
-			var path = Path.Combine(wwwPath, "Uploads\\", imageFileName);
-			if (System.IO.File.Exists(path))
+			if (System.IO.File.Exists(imagePath))
 			{
-				System.IO.File.Delete(path);
+				System.IO.File.Delete(imagePath);
 				return true;
 			}
 			return false;
 		}
 
-		public async Task<Tuple<int, string,string>> SaveImageAsync(IFormFile imageFile)
+		public async Task<Image> SaveImage(IFormFile imageFile)
 		{
 			var contentPath = this.environment.ContentRootPath;
 			// path = "c://projects/productminiapi/uploads" ,not exactly something like that
-			var path = Path.Combine(contentPath, "Uploads");
+			var path = Path.Combine(contentPath, filesDirectory);
 			if (!Directory.Exists(path))
 			{
 				Directory.CreateDirectory(path);
@@ -61,17 +56,52 @@ namespace Core.Services
 			var allowedExtensions = new string[] { ".jpg", ".png", ".jpeg" };
 			if (!allowedExtensions.Contains(ext))
 			{
-				string msg = string.Format("Only {0} extensions are allowed", string.Join(",", allowedExtensions));
-				return new Tuple<int, string,string>(0, msg,msg);
+				throw new HttpException(ErrorMessages.ImageSave, HttpStatusCode.BadRequest);
 			}
 			string uniqueString = Guid.NewGuid().ToString();
 			// we are trying to create a unique filename here
 			var newFileName = uniqueString + ext;
 			var fileWithPath = Path.Combine(path, newFileName);
-			var stream = new FileStream(fileWithPath, FileMode.Create);
-			await imageFile.CopyToAsync(stream);
-			stream.Close();
-			return new Tuple<int, string, string>(1, newFileName, fileWithPath);
+
+			ResizeAndSaveImage(imageFile, new System.Drawing.Size(1920, 1080), path + "\\1920_" + newFileName);
+			ResizeAndSaveImage(imageFile, new System.Drawing.Size(1024, 768), path + "\\1024_" + newFileName);
+			ResizeAndSaveImage(imageFile, new System.Drawing.Size(320, 240), path + "\\320_" + newFileName);
+			ResizeAndSaveImage(imageFile, new System.Drawing.Size(64, 64), path + "\\64_" + newFileName);
+
+			var image = new Image
+			{
+				Path = newFileName,
+				Title = imageFile.FileName
+			};
+
+			return image;
+		}
+
+		private void ResizeAndSaveImage(IFormFile file, System.Drawing.Size size,string path)
+		{
+			System.Drawing.Image image = System.Drawing.Image.FromStream(file.OpenReadStream(), true, true);
+
+			System.Drawing.Bitmap resizedImage = new System.Drawing.Bitmap(image, size);
+
+			resizedImage.Save(path);
+
+		}
+
+
+		public async Task<List<Image>> SaveImages(ICollection<IFormFile> imageFiles)
+		{
+			if(imageFiles == null) throw new HttpException(ErrorMessages.ImageBadRequest, HttpStatusCode.BadRequest);
+
+			List<Image> images = new List<Image>();
+
+			foreach(var file in imageFiles)
+			{
+				var image = await SaveImage(file);
+				
+				images.Add(image);
+			}
+
+			return images;
 		}
 
 		public async Task AddImageToDatabase(Image image)
@@ -79,51 +109,24 @@ namespace Core.Services
 			if (image == null) throw new HttpException(ErrorMessages.ImageBadRequest, HttpStatusCode.BadRequest);
 
 			await repository.AddAsync(image);
-			await repository.SaveChangesAsync();
-		}
-
-		public async Task AddImage(ImageCreateDTO imageDTO)
-		{
-			Image img = new Image();
-			var res = await SaveImageAsync(imageDTO.File);
-
-			img.Path = res.Item3;
-			img.Title = res.Item2;
-			
-			if (imageDTO.PlaceId != null)
-			{
-				var pl = await placeRepository.FindAsync(imageDTO.PlaceId);
-
-				if(pl != null)
-				{
-					img.Place = pl;
-					pl.Images.Add(img);
-				}
-			}
-			else if (imageDTO.EventId != null)
-			{
-				var ev = await eventRepository.FindAsync(imageDTO.EventId);
-
-				if (ev != null)
-				{
-					img.Event = ev;
-					ev.Images.Add(img);
-				}
-			}
-
-			await repository.SaveChangesAsync();
+			//await repository.SaveChangesAsync();
 		}
 
 		public async Task DeleteImage(int id)
 		{
 			var img = await repository.FindAsync(id);
 
-			DeleteImageAsync(img.Title);
+			await DeleteImageFile(img.Path);
+			
+			repository.Remove(img);
+
+			await repository.SaveChangesAsync();
 		}
 
 		public async Task<ImageDTO> GetImage(int id)
 		{
 			return mapper.Map<ImageDTO>(await repository.FindAsync(id));
 		}
+
 	}
 }

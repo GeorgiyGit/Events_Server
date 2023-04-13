@@ -14,7 +14,7 @@ namespace Core.DTOs.PlaceDTOs
 		public string Name { get; set; }
 		public string Route { get; set; }
 		public int FullRating { get; set; }
-		//public ImageDTO Image { get; set; }
+		public ICollection<ImageDTO> Images { get; set; } = new HashSet<ImageDTO>();
 		public ICollection<GenreBaseDTO> Types { get; set; } = new HashSet<GenreBaseDTO>();
 	}
 }

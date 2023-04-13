@@ -1,5 +1,7 @@
-﻿using Core.DTOs.PlaceDTOs;
+﻿using Core.DTOs.EventDTOs;
+using Core.DTOs.PlaceDTOs;
 using Core.Models;
+using Google.Apis.Util;
 
 namespace Core.Helpers
 {
@@ -18,8 +20,6 @@ namespace Core.Helpers
                            opt => opt.Ignore())
                 .ForMember(dest => dest.FullRating,
                            opt => opt.Ignore());
-				//.ForMember(dest => dest.Image,
-						   //opt => opt.MapFrom(src => src.Images.First().Path));
 
             CreateMap<Place, PlaceSimpleDTO>()
                .ForMember(dest => dest.FullRating,
@@ -37,6 +37,10 @@ namespace Core.Helpers
                                                        opt => opt.Ignore())
                                             .ForMember(dest => dest.Images,
 													   opt => opt.Ignore());
+
+			CreateMap<Place, PlaceFavoriteDTO>()
+				.ForMember(dest => dest.Image,
+						   opt => opt.Ignore());
 		}
     }
 }

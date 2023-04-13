@@ -40,8 +40,8 @@ namespace Server.Controllers
         }
 
 
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] PlaceCreateDTO pl)
+        [HttpPost, DisableRequestSizeLimit]
+        public async Task<IActionResult> Create([FromForm] PlaceCreateDTO pl)
         {
             await placesService.CreateAsync(pl);
 

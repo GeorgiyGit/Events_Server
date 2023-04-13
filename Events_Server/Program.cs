@@ -12,6 +12,7 @@ using Core.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("EventsDbContextConnection") ?? throw new InvalidOperationException("Connection string 'AzureDbConnection' not found.");
@@ -65,6 +66,7 @@ builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IGetUserIdService, GetUserIdService>();
 builder.Services.AddScoped<IFavoriteService, FavoriteService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ILikesInterface, LikesService>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -91,6 +93,14 @@ app.UseCors(options =>
 	options.AllowAnyHeader();
 	options.AllowAnyMethod();
 	options.AllowAnyOrigin();
+});
+
+var directPath = "Uploads";//builder.Configuration.GetConnectionString("Path");
+app.UseStaticFiles(new StaticFileOptions
+{
+	FileProvider = new PhysicalFileProvider(
+		   Path.Combine(builder.Environment.ContentRootPath, directPath)),
+	RequestPath = "/"+directPath
 });
 
 

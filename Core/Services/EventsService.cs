@@ -17,22 +17,26 @@ namespace Core.Services
 		private readonly IMapper mapper;
 		private readonly IGetUserIdService getUserIdService;
 		private readonly IGenresService genresService;
-
+		private readonly IImageService imageService;
 		public EventsService(IRepository<Event> repository, 
                              IMapper mapper,
 							 IGetUserIdService getUserIdService,
-							 IGenresService genresService)
+							 IGenresService genresService,
+							 IImageService imageService)
         {
 			this.repository = repository;
 			this.mapper = mapper;
 			this.getUserIdService = getUserIdService;
 			this.genresService = genresService;
+			this.imageService = imageService;
 		}
 		public async Task<IEnumerable<EventSimpleDTO>> GetAllSimpleAsync()
 		{
-			var events = await repository.GetAsync(includeProperties: $"{nameof(Event.Place)},{nameof(Event.Types)}");
+			var events = (await repository.GetAsync(includeProperties: $"{nameof(Event.Types)},{nameof(Event.Images)}")).ToList();
 
-			return mapper.Map<IEnumerable<EventSimpleDTO>>(events);
+			var mappedEvents = mapper.Map<List<EventSimpleDTO>>(events);
+
+			return mappedEvents;
 		}
 		public async Task<IEnumerable<EventDTO>> GetAllAsync()
         {
@@ -44,22 +48,18 @@ namespace Core.Services
 				eventsDTO[i].FullRating = events[i].Rating * 100 + events[i].LikedUsers.Count();
 			}
 
-
-
 			return mapper.Map<IEnumerable<EventDTO>>(events);
         }
 
         public async Task<EventDTO?> GetOneAsync(int id)
         {
-            if (id < 0) throw new HttpException(ErrorMessages.EventBadRequest, HttpStatusCode.BadRequest);
+			var ev = await GetOriginalEvent(id);
 
-            var ev = await repository.FindAsync(id);
+			var mappedEvent = mapper.Map<EventDTO>(ev);
 
+			return mappedEvent;
 
-			if (ev == null) throw new HttpException(ErrorMessages.EventNotFound, HttpStatusCode.NotFound);
-
-            return mapper.Map<EventDTO>(ev);
-        }
+		}
 
         public async Task CreateAsync(EventCreateDTO ev)
         {
@@ -67,6 +67,7 @@ namespace Core.Services
 			string userId = getUserIdService.GetUserId();
 
 			_event.OwnerId = userId;
+
 			foreach (var id in ev.Types)
 			{
 				var genre = await genresService.GetOriginalAsync(id);
@@ -75,6 +76,16 @@ namespace Core.Services
 					_event.Types.Add(genre);
 					genre.Events.Add(_event);
 				}
+			}
+
+			List<Image> images = await imageService.SaveImages(ev.Images);
+
+			foreach (var image in images)
+			{
+				_event.Images.Add(image);
+				image.Event = _event;
+
+				await imageService.AddImageToDatabase(image);
 			}
 
 			await repository.AddAsync(_event);
@@ -113,5 +124,16 @@ namespace Core.Services
             repository.Remove(ev);
             await repository.SaveChangesAsync();
         }
-    }
+
+		private async Task<Event> GetOriginalEvent(int id)
+		{
+			if (id < 0) throw new HttpException(ErrorMessages.EventBadRequest, HttpStatusCode.BadRequest);
+
+			var ev = (await repository.GetAsync(x => x.Id == id, includeProperties: $"{nameof(Event.Owner)},{nameof(Event.Comments)},{nameof(Event.Types)},{nameof(Event.Images)}")).FirstOrDefault();
+
+			if (ev == null) throw new HttpException(ErrorMessages.EventNotFound, HttpStatusCode.NotFound);
+
+			return ev;
+		}
+	}
 }

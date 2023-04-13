@@ -1,4 +1,5 @@
 ﻿using Core.DTOs.ImageDTOs;
+using Microsoft.AspNetCore.Http;
 
 namespace Core.DTOs.EventDTOs
 {
@@ -24,5 +25,6 @@ namespace Core.DTOs.EventDTOs
         public int Price { get; set; }
 
         //public ICollection<ImageDTO> Images { get; set; } = new HashSet<ImageDTO>();
+        public List<IFormFile> Images { get; set; } = new List<IFormFile>();
     }
 }

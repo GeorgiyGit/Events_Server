@@ -1,6 +1,7 @@
 ﻿using CloudinaryDotNet.Actions;
 using Core.DTOs.ImageDTOs;
 using Core.Models;
+using Core.Services;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -12,10 +13,9 @@ namespace Core.Interfaces
 {
     public interface IImageService
     {
-		//public Task<Tuple<int, string, string>> SaveImageAsync(IFormFile imageFile);
-		//public bool DeleteImageAsync(string imageFileName);
-		//public Task AddImageToDatabase(Image image);
-		public Task AddImage(ImageCreateDTO imageDTO);
+		public Task<Image> SaveImage(IFormFile imageFile);
+		public Task AddImageToDatabase(Image image);
+		public Task<List<Image>> SaveImages(ICollection<IFormFile> imageFiles);
 		public Task DeleteImage(int id);
 		public Task<ImageDTO> GetImage(int id);
 	}

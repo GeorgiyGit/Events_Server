@@ -11,6 +11,9 @@ namespace Core.Interfaces
     {
         Task<IEnumerable<CommentDTO>> GetAllPlaceAsync(int id);
 		Task<IEnumerable<CommentDTO>> GetAllEventAsync(int id);
+
+        Task<IEnumerable<CommentDTO>> GetAllChilds(int id);
+        Task<int> GetChildsCount(int id);
 		Task<CommentDTO?> GetOneAsync(int id);
         Task CreateAsync(CommentCreateDTO ev);
         Task EditAsync(CommentEditDTO ev);

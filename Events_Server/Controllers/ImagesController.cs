@@ -20,13 +20,6 @@ namespace Events_Server.Controllers
 			this.imagesService = imagesService;
 		}
 
-		[HttpPost]
-		public async Task<IActionResult> AddAsync([FromForm] ImageCreateDTO imageDTO)
-		{
-			await imagesService.AddImage(imageDTO);
-			return Ok();
-		}
-
 		[HttpGet]
 		public async Task<IActionResult> GetAsync([FromRoute] int id)
 		{

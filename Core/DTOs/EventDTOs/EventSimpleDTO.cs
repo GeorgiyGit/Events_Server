@@ -15,7 +15,7 @@ namespace Core.DTOs.EventDTOs
 		public string Title { get; set; }
 		public DateTime EventTime { get; set; }
 		public string Route { get; set; }
-		//public ImageDTO Image { get; set; }
+		public ICollection<ImageDTO> Images { get; set; } = new HashSet<ImageDTO>();
 		public int FullRating { get; set; }
 		public ICollection<GenreBaseDTO> Types { get; set; } = new HashSet<GenreBaseDTO>();
 	}

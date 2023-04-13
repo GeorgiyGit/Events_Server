@@ -33,9 +33,11 @@ namespace Core.Services
 		}
         public async Task<IEnumerable<PlaceSimpleDTO>> GetAllSimpleAsync()
         {
-            var places = (await repository.GetAsync(includeProperties: $"{nameof(Place.Types)}"));
+            var places = (await repository.GetAsync(includeProperties: $"{nameof(Place.Types)},{nameof(Place.Images)}")).ToList();
 
-            return mapper.Map<IEnumerable<PlaceSimpleDTO>>(places);
+            var mappedPlaces = mapper.Map<List<PlaceSimpleDTO>>(places);
+
+			return mappedPlaces;
         }
 
 		public async Task<IEnumerable<PlaceDTO>> GetAllAsync()
@@ -61,8 +63,6 @@ namespace Core.Services
 			var pl = await GetOriginalPlace(id);
 
 			var p = mapper.Map<PlaceDTO>(pl);
-            //p.Image = img.Path;
-
 
             return p;
         }
@@ -73,6 +73,7 @@ namespace Core.Services
             string userId = getUserIdService.GetUserId();
 
             p.OwnerId = userId;
+            
             foreach (var id in pl.Types)
             {
                 var genre = await genresService.GetOriginalAsync(id);
@@ -82,14 +83,17 @@ namespace Core.Services
                     genre.Places.Add(p);
                 }
             }
-            //var img = new Image()
-            //{
-                //Path = pl.Image,
-                //Title = pl.Image,
-             //   Place = p
-            //};
-            //p.Images.Add(img);
-           // await imgRep.AddAsync(img);
+
+            List<Image> images = await imageService.SaveImages(pl.Images);
+           
+            foreach(var image in images)
+            {
+                p.Images.Add(image);
+                image.Place = p;
+
+                await imageService.AddImageToDatabase(image);
+			}
+
 			await repository.AddAsync(p);
             await repository.SaveChangesAsync();
 		}
@@ -100,9 +104,12 @@ namespace Core.Services
 			string userId = getUserIdService.GetUserId();
 
 			p.OwnerId = userId;
+            
             var oldP = (await repository.GetAsync(x => x.Id == pl.Id, includeProperties: $"{nameof(Place.Images)},{nameof(Place.Events)},{nameof(Place.Types)}")).FirstOrDefault();
-			repository.Remove(oldP);
-			await repository.AddAsync(p);
+			
+            repository.Remove(oldP);
+			
+            await repository.AddAsync(p);
             await repository.SaveChangesAsync();
 		}
         public async Task DeleteAsync(int id)
@@ -125,7 +132,7 @@ namespace Core.Services
         {
 			if (id < 0) throw new HttpException(ErrorMessages.PlaceBadRequest, HttpStatusCode.BadRequest);
 
-			var pl = (await repository.GetAsync(x => x.Id == id, includeProperties: $"{nameof(Place.Events)},{nameof(Place.Comments)},{nameof(Place.Types)}")).FirstOrDefault();
+			var pl = (await repository.GetAsync(x => x.Id == id, includeProperties: $"{nameof(Place.Events)},{nameof(Place.Comments)},{nameof(Place.Types)},{nameof(Place.Images)}")).FirstOrDefault();
 
 			if (pl == null) throw new HttpException(ErrorMessages.PlaceNotFound, HttpStatusCode.NotFound);
 

@@ -53,5 +53,12 @@ namespace Server.Controllers
 		{
 			await accountSevice.LogOut();
 		}
+
+		[HttpPost]
+		[Route("external-login")]
+		public async Task<IActionResult> ExternalLogin([FromBody] ExternalAuthDTO externalAuth)
+		{
+			return Ok(await accountSevice.ExternalLogin(externalAuth));
+		}
 	}
 }

@@ -39,10 +39,10 @@ namespace Core.DTOs.EventDTOs
 		public int FullRating { get; set; }
 
 		//public bool IsModerated { get; set; }
-        public ICollection<string> LikedUsers { get; set; } = new HashSet<string>();
-        public ICollection<string> FavoriteUsers { get; set; } = new HashSet<string>();
+        //public ICollection<string> LikedUsers { get; set; } = new HashSet<string>();
+        //public ICollection<string> FavoriteUsers { get; set; } = new HashSet<string>();
 
         public ICollection<CommentDTO> Comments { get; set; } = new HashSet<CommentDTO>();
-        //public ICollection<ImageDTO> Images { get; set; } = new HashSet<ImageDTO>();
+        public ICollection<ImageDTO> Images { get; set; } = new HashSet<ImageDTO>();
     }
 }

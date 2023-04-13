@@ -120,6 +120,12 @@
   <data name="CommentBadRequest" xml:space="preserve">
     <value>Comment Bad Request</value>
   </data>
+  <data name="CommentIsAlreadyDisliked" xml:space="preserve">
+    <value>Comment is already disliked</value>
+  </data>
+  <data name="CommentIsAlreadyLiked" xml:space="preserve">
+    <value>Comment is already liked</value>
+  </data>
   <data name="CommentNotFound" xml:space="preserve">
     <value>Comment Is Not Found</value>
   </data>
@@ -128,6 +134,9 @@
   </data>
   <data name="EventNotFound" xml:space="preserve">
     <value>Event Is Not Found</value>
+  </data>
+  <data name="ExternalAuth" xml:space="preserve">
+    <value>Invalid External Authentication</value>
   </data>
   <data name="GenreBadRequest" xml:space="preserve">
     <value>Genre Bad Request</value>
@@ -140,6 +149,9 @@
   </data>
   <data name="ImageNotFound" xml:space="preserve">
     <value>Image Is Not Found</value>
+  </data>
+  <data name="ImageSave" xml:space="preserve">
+    <value>Image type is not allowed</value>
   </data>
   <data name="InvalidCredentials" xml:space="preserve">
     <value>Invalid Credential</value>
@@ -161,5 +173,8 @@
   </data>
   <data name="UserExists" xml:space="preserve">
     <value>User already exists</value>
+  </data>
+  <data name="UserNotFound" xml:space="preserve">
+    <value>User is not found</value>
   </data>
 </root>

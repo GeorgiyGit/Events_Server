@@ -15,7 +15,7 @@ namespace Core.DTOs.PlaceDTOs
         public string GoogleMaps { get; set; }
 
         public ICollection<int> Types { get; set; } = new HashSet<int>();
-        //public IFormFile Image { get; set; }
-        //public string Image { get; set; }
-    }
+
+        public List<IFormFile> Images { get; set; } = new List<IFormFile>();
+	}
 }

@@ -13,6 +13,8 @@ namespace Core.Interfaces
         public Task RegisterAdmin(UserCreateDTO user);
 
 		public Task<TokenDTO> Login(UserLoginDTO user);
-        public Task LogOut();
+        public Task<TokenDTO> ExternalLogin(ExternalAuthDTO externalAuth);
+
+		public Task LogOut();
     }
 }

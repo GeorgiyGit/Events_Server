@@ -5,7 +5,9 @@ using Core.Help_elements;
 using Core.Interfaces;
 using Core.Models;
 using Core.Resources;
+using Google.Apis.Auth;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -23,6 +25,7 @@ namespace Core.Services
 		private readonly RoleManager<IdentityRole> _roleManager;
 		private readonly IMapper mapper;
 		private readonly IConfiguration configuration;
+		private readonly IConfigurationSection _googleSettings;
 
 		public AccountService(UserManager<User> userManager,
 							  SignInManager<User> signInManager,
@@ -35,6 +38,8 @@ namespace Core.Services
 			this.mapper = mapper;
 			this._roleManager = _roleManager;
 			this.configuration = configuration;
+
+			_googleSettings = configuration.GetSection("GoogleAuthSettings");
 		}
 
 		public async Task<TokenDTO> Login(UserLoginDTO model)
@@ -165,5 +170,75 @@ namespace Core.Services
         {
             await signInManager.SignOutAsync();
         }
+
+		public async Task<GoogleJsonWebSignature.Payload> VerifyGoogleToken(ExternalAuthDTO externalAuth)
+		{
+			try
+			{
+				var settings = new GoogleJsonWebSignature.ValidationSettings()
+				{
+					Audience = new List<string>() { _googleSettings.GetSection("clientId").Value }
+				};
+
+				var payload = await GoogleJsonWebSignature.ValidateAsync(externalAuth.IdToken, settings);
+
+				return payload;
+			}
+			catch (Exception ex)
+			{
+				//log an exception
+				return null;
+			}
+		}
+
+		public async Task<TokenDTO> ExternalLogin(ExternalAuthDTO externalAuth)
+		{
+			var payload = await VerifyGoogleToken(externalAuth);
+			if (payload == null)
+				throw new HttpException(ErrorMessages.ExternalAuth, HttpStatusCode.BadRequest);
+
+			var info = new UserLoginInfo(externalAuth.Provider, payload.Subject, externalAuth.Provider);
+			var user = await userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+			if (user == null)
+			{
+				user = await userManager.FindByEmailAsync(payload.Email);
+				if (user == null)
+				{
+					user = new User { Email = payload.Email, UserName = payload.Email };
+					await userManager.CreateAsync(user);
+					//prepare and send an email for the email confirmation
+					if (await _roleManager.RoleExistsAsync(UserRoles.User))
+						await userManager.AddToRoleAsync(user, UserRoles.User);
+
+					await userManager.AddLoginAsync(user, info);
+				}
+				else
+				{
+					await userManager.AddLoginAsync(user, info);
+				}
+			}
+			if (user == null)
+				throw new HttpException(ErrorMessages.ExternalAuth, HttpStatusCode.BadRequest);
+
+			var userRoles = await userManager.GetRolesAsync(user);
+
+			var authClaims = new List<Claim>
+				{
+					new Claim(ClaimTypes.Email, user.Email),
+					new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+				};
+
+			foreach (var userRole in userRoles)
+			{
+				authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+			}
+
+			var token = await GenerateTokenAsync(user);
+			return new TokenDTO
+			{
+				Token = token,
+				Roles = userRoles
+			};
+		}
 	}
 }

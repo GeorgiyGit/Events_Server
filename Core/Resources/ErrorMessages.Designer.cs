@@ -70,6 +70,24 @@ namespace Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Comment is already disliked.
+        /// </summary>
+        internal static string CommentIsAlreadyDisliked {
+            get {
+                return ResourceManager.GetString("CommentIsAlreadyDisliked", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Comment is already liked.
+        /// </summary>
+        internal static string CommentIsAlreadyLiked {
+            get {
+                return ResourceManager.GetString("CommentIsAlreadyLiked", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Comment Is Not Found.
         /// </summary>
         internal static string CommentNotFound {
@@ -93,6 +111,15 @@ namespace Core.Resources {
         internal static string EventNotFound {
             get {
                 return ResourceManager.GetString("EventNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid External Authentication.
+        /// </summary>
+        internal static string ExternalAuth {
+            get {
+                return ResourceManager.GetString("ExternalAuth", resourceCulture);
             }
         }
         
@@ -129,6 +156,15 @@ namespace Core.Resources {
         internal static string ImageNotFound {
             get {
                 return ResourceManager.GetString("ImageNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Image type is not allowed.
+        /// </summary>
+        internal static string ImageSave {
+            get {
+                return ResourceManager.GetString("ImageSave", resourceCulture);
             }
         }
         
@@ -192,6 +228,15 @@ namespace Core.Resources {
         internal static string UserExists {
             get {
                 return ResourceManager.GetString("UserExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User is not found.
+        /// </summary>
+        internal static string UserNotFound {
+            get {
+                return ResourceManager.GetString("UserNotFound", resourceCulture);
             }
         }
     }

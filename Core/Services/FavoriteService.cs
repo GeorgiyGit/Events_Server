@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Core.DTOs.EventDTOs;
+using Core.DTOs.ImageDTOs;
 using Core.DTOs.PlaceDTOs;
 using Core.Exceptions;
 using Core.Interfaces;
@@ -57,33 +58,50 @@ namespace Core.Services
 
 			var place = (await placeRep.GetAsync(pl=> pl.Id == id,includeProperties:$"{nameof(Place.Owner)},{nameof(Place.FavoriteUsers)}")).FirstOrDefault();
 
-			if (place == null) throw new HttpException(ErrorMessages.EventNotFound, HttpStatusCode.NotFound);
+			if (place == null) throw new HttpException(ErrorMessages.PlaceNotFound, HttpStatusCode.BadRequest);
 
 			user.FavoritePlaces.Add(place);
 			place.FavoriteUsers.Add(user);
 
 			await userRep.SaveChangesAsync();
 		}
-		public async Task<IEnumerable<EventDTO>> GetFavoriteEvents()
+		public async Task<IEnumerable<EventFavoriteDTO>> GetFavoriteEvents()
 		{
-			var user = (await userRep.GetAsync(u => u.Id == userIdService.GetUserId(), includeProperties: $"{nameof(User.FavoriteEvents)}")).FirstOrDefault();
+			var userId = userIdService.GetUserId();
+			var user = await userRep.FindAsync(userId);
 
-			if (user == null) throw new HttpException(ErrorMessages.UserBadId, HttpStatusCode.NotFound);
-			//var events = await eventRep.GetAsync();
+			var events = (await eventRep.GetAsync(u => u.FavoriteUsers.Contains(user), includeProperties: $"{nameof(Event.Place)},{nameof(Event.Types)},{nameof(Event.Images)}")).ToList();
 
-			return mapper.Map<IEnumerable<EventDTO>>(user.FavoriteEvents);
+			var mappedEvents = mapper.Map<List<EventFavoriteDTO>>(events);
+
+			for(int i = 0; i < mappedEvents.Count; i++)
+			{
+				if (events[i].Images.Count >= 1)
+				{
+					mappedEvents[i].Image = mapper.Map<ImageDTO>(events[i].Images.First());
+				}
+			}
+
+			return mappedEvents;
 		}
-		public async Task<IEnumerable<PlaceDTO>> GetFavoritePlaces()
+		public async Task<IEnumerable<PlaceFavoriteDTO>> GetFavoritePlaces()
 		{
-			var user = (await userRep.GetAsync(u => u.Id == userIdService.GetUserId(), includeProperties: $"{nameof(User.FavoritePlaces)}")).FirstOrDefault();
+			var userId = userIdService.GetUserId();
+			var user = await userRep.FindAsync(userId);
 
-			if (user == null) throw new HttpException(ErrorMessages.UserBadId, HttpStatusCode.NotFound);
+			var places = (await placeRep.GetAsync(u => u.FavoriteUsers.Contains(user), includeProperties: $"{nameof(Place.Types)},{nameof(Place.Images)}")).ToList();
 
-			//var places = await placeRep.GetAsync();
+			var mappedPlaces = mapper.Map<List<PlaceFavoriteDTO>>(places);
 
-			//if (places == null) throw new HttpException(ErrorMessages.EventNotFound, HttpStatusCode.NotFound);
+			for (int i = 0; i < mappedPlaces.Count; i++)
+			{
+				if (places[i].Images.Count >= 1)
+				{
+					mappedPlaces[i].Image = mapper.Map<ImageDTO>(places[i].Images.First());
+				}
+			}
 
-			return mapper.Map<IEnumerable<PlaceDTO>>(user.FavoritePlaces);
+			return mappedPlaces;
 		}
 
 		public async Task<bool> IsFavoriteEvent(int id)

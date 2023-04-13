@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33103.184
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Events_Server", "Events_Server\Events_Server.csproj", "{738B7FD4-71D2-4175-8896-E880E72F9770}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Events_Server", "Events_Server\Events_Server.csproj", "{738B7FD4-71D2-4175-8896-E880E72F9770}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{4C14454E-D9FC-4863-B3AB-AB87F7FCCA30}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Core\Core.csproj", "{4C14454E-D9FC-4863-B3AB-AB87F7FCCA30}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{E0B9D5F1-B244-4A3E-93E4-546269AFFD92}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{E0B9D5F1-B244-4A3E-93E4-546269AFFD92}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -36,7 +36,6 @@ namespace Core.DTOs.PlaceDTOs
 
         public ICollection<int> Events { get; set; } = new HashSet<int>();
         public ICollection<GenreBaseDTO> Types { get; set; } = new HashSet<GenreBaseDTO>();
-        //public ICollection<ImageDTO> Images { get; set; } = new HashSet<ImageDTO>();
-        //public string Image { get; set; }
+        public ICollection<ImageDTO> Images { get; set; } = new HashSet<ImageDTO>();
     }
 }
